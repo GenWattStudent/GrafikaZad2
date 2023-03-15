@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>CPSC 424, Lab 2, Exercise 1</title>
+    <style>
+      /* This style section is here to make the canvas more obvious on the
+       page.  It is white on a light gray page background, with a thin
+       black border. */
+
+      body {
+        background-color: #dddddd;
+      }
+
+      canvas {
+        background-color: white;
+        display: block;
+      }
+
+      #canvasholder {
+        border: 2px solid black;
+        float: left;
+        /* This makes the border exactly fit the canvas. */
+      }
+    </style>
+    <script>
+      'use strict' // gives improved error-checking in scripts.
+
+      class ExtraContextDraw {
+        constructor(graphics) {
+          this.graphics = graphics
+        }
+
+        strokeLine(x1, y1, x2, y2) {
+          this.graphics.beginPath()
+          this.graphics.moveTo(x1, y1)
+          this.graphics.lineTo(x2, y2)
+          this.graphics.stroke()
+        }
+
+        fillCircle(x, y, r) {
+          this.graphics.beginPath()
+          this.graphics.arc(x, y, r, 0, 2 * Math.PI, false)
+          this.graphics.fill()
+        }
+
+        strokeCircle(x, y, r) {
+          this.graphics.beginPath()
+          this.graphics.arc(x, y, r, 0, 2 * Math.PI, false)
+          this.graphics.stroke()
+        }
+
+        fillPoly() {
+          if (arguments.length < 6) return
+          this.graphics.beginPath()
+          this.graphics.moveTo(arguments[0], arguments[1])
+
+          for (let i = 2; i + 1 < arguments.length; i = i + 2) {
+            this.graphics.lineTo(arguments[i], arguments[i + 1])
+          }
+
+          this.graphics.closePath()
+          this.graphics.fill()
+        }
+
+        strokePoly() {
+          if (arguments.length < 4) return
+          this.graphics.beginPath()
+          this.graphics.moveTo(arguments[0], arguments[1])
+
+          for (let i = 2; i + 1 < arguments.length; i = i + 2) {
+            this.graphics.lineTo(arguments[i], arguments[i + 1])
+          }
+
+          this.graphics.closePath()
+          this.graphics.stroke()
+        }
+
+        fillOval(x, y, r1, r2) {
+          this.graphics.save()
+          this.graphics.translate(x, y)
+          this.graphics.scale(r1, r2)
+          this.graphics.beginPath()
+          this.graphics.arc(0, 0, 1, 0, 2 * Math.PI, false)
+          this.graphics.restore()
+          this.graphics.fill()
+        }
+
+        strokeOval(x, y, r1, r2) {
+          this.graphics.save()
+          this.graphics.translate(x, y)
+          this.graphics.scale(r1, r2)
+          this.graphics.beginPath()
+          this.graphics.arc(0, 0, 1, 0, 2 * Math.PI, false)
+          this.graphics.restore()
+          this.graphics.stroke()
+        }
+
+        getRGB(x, y) {
+          const color = this.graphics.getImageData(x, y, 1, 1)
+          return color.data
+        }
+      }
+
+      class App {
+        constructor() {
+          this.canvas = document.querySelector('canvas')
+          this.graphics = this.canvas.getContext('2d')
+          this.extra = new ExtraContextDraw(this.graphics)
+        }
+        draw() {
+          this.graphics.clearRect(0, 0, 600, 600)
+
+          this.graphics.fillStyle = 'yellow'
+          this.extra.fillCircle(100, 500, 50)
+          this.graphics.fillStyle = 'white'
+
+          this.extra.fillCircle(140, 500, 3)
+          this.extra.fillCircle(125, 500, 3)
+          this.extra.fillCircle(44, 470, 50)
+          // draw bezzier
+          this.graphics.beginPath()
+          this.graphics.bezierCurveTo(50, 520, 130, 560, 120, 400)
+          this.graphics.fill()
+          this.graphics.closePath()
+
+          this.graphics.fillStyle = 'black'
+          // draw eyes
+          this.extra.fillCircle(140, 500, 2)
+          this.extra.fillCircle(125, 500, 2)
+          // draw mouth
+          this.extra.fillCircle(120, 525, 10)
+          this.graphics.fillStyle = 'yellow'
+          this.extra.fillCircle(123, 518, 10)
+          this.graphics.fillStyle = 'white'
+          // draw teeth
+          this.graphics.save()
+          this.graphics.translate(115, 525)
+          this.graphics.rotate(0.5)
+          this.graphics.fillRect(0, 0, 4, 4)
+          this.graphics.fillRect(4, 0, 4, 4)
+          this.graphics.restore()
+        }
+      }
+
+      function init() {
+        const app = new App()
+
+        app.draw()
+      }
+
+      window.addEventListener('load', init)
+    </script>
+  </head>
+
+  <body>
+    <!-- the onload attribute here is what calls the init() function -->
+
+    <h2>CS 424, Lab 2, Exercise 1</h2>
+
+    <noscript>
+      <!-- This message will be shown in the page if JavaScript is not available. -->
+      <p>JavaScript is required to use this page.</p>
+    </noscript>
+
+    <div id="canvasholder">
+      <canvas id="canvas" width="600" height="600">
+        <!-- This message is shown on the page if the browser doesn't support the canvas element. -->
+        Canvas not supported.
+      </canvas>
+    </div>
+  </body>
+</html>
